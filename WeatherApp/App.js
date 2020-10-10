@@ -14,13 +14,13 @@ import Reloadicon from "./components/Reloadicon";
 import Weatherdetails from "./components/Weatherdetails";
 import { colors } from "./utils";
 
-const API_KEY = "c6a50ce34f4caaaba9f91a8a6f24292e";
 const BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
 
 export default function App() {
     const [errMsg, setErrMsg] = useState(null);
     const [currentWeather, setCurrentWeather] = useState(null);
     const [units, setUnits] = useState("imperial");
+
 
     useEffect(() => {
         load();
@@ -37,12 +37,17 @@ export default function App() {
             }
             const location = await Location.getCurrentPositionAsync();
             const { latitude, longitude } = location.coords;
-            const weatherUrl = `${BASE_URL}lat=${latitude}&lon=${longitude}&units=${units}&appid=${API_KEY}`;
-            fetch(weatherUrl)
-                .then((res) => res.json())
-                .then((res) => {
-                    setCurrentWeather(res);
-                });
+            const weatherUrl = `${BASE_URL}lat=${latitude}&lon=${longitude}&units=${units}&appid=c6a50ce34f4caaaba9f91a8a6f24292e`;
+
+            const response = await fetch(weatherUrl)
+
+            const result = await response.json()
+
+            if (response.ok) {
+                setCurrentWeather(result)
+            } else {
+                setErrMsg(result.message)
+            }
         } catch (error) {
             setErrMsg(error.message);
         }
@@ -56,12 +61,13 @@ export default function App() {
                     <Reloadicon load={load} />
                     <Weatherinfo currentWeather={currentWeather} />
                 </View>
-                <Weatherdetails currentWeather={currentWeather} />
+                <Weatherdetails currentWeather={currentWeather} units={units}/>
             </SafeAreaView>
         );
     } else if (errMsg) {
         return (
             <SafeAreaView style={styles.container}>
+                <Reloadicon load={load} />
                 <Text style={{ textAlign: "center" }}>{errMsg}</Text>
                 <StatusBar style="auto" />
             </SafeAreaView>
