@@ -1,11 +1,11 @@
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
     View,
     SafeAreaView,
-    ActivityIndicator, TextInput
+    ActivityIndicator, TextInput, StatusBar, Platform
 } from "react-native";
 import * as Location from "expo-location";
 import Weatherinfo from "./components/Weatherinfo";
@@ -78,10 +78,13 @@ export default function App() {
             load()
         }
     }
+
+    const statusBarColor = Platform.OS === 'ios' ? "dark-content" : "light-content";
+
     if (currentWeather) {
         return (
             <SafeAreaView style={styles.container}>
-                <StatusBar style="auto" />
+                <StatusBar backgroundColor="black" barStyle={statusBarColor} />
                 <View style={styles.main}>
                     <Unitspicker units={units} setUnits={setUnits} />
                     <Reloadicon load={load} setNull={setNull} setSinput={setSinput}/>
@@ -111,7 +114,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#fff8f0",
+        backgroundColor: "lightblue",
         flex: 1,
         justifyContent: "center",
     },
