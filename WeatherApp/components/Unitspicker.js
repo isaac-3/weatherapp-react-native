@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         ...Platform.select({
             ios: {
-                top: -20,
+                top: -40,
             },
             android: {
                 top: 50,
