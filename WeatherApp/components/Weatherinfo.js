@@ -19,7 +19,7 @@ const Weatherinfo = ({ currentWeather, units }) => {
 
     return (
         <SafeAreaView style={styles.weatherInfo}>
-            <Text>{name}</Text>
+            <Text style={styles.nameText}>{name}</Text>
             <Image source={{ uri: iconUrl }} style={styles.weatherIcon} />
             <Text style={styles.textPrimary}>{Math.round(temp)} {deg}°</Text>
             <Text style={styles.weatherDescription}>{description}</Text>
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     },
     weatherDescription: {
         textTransform: "capitalize",
+        paddingTop: 24
     },
     textPrimary: {
         fontSize: 40,
@@ -49,6 +50,10 @@ const styles = StyleSheet.create({
         color: SECONDARY_COLOR,
         fontWeight: "500",
         marginTop: 10,
+    },
+    nameText:{
+        textTransform: "uppercase",
+        fontSize: 24
     },
 });
 
