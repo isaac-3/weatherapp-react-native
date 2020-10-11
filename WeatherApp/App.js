@@ -5,7 +5,7 @@ import {
     Text,
     View,
     SafeAreaView,
-    ActivityIndicator,
+    ActivityIndicator, TextInput
 } from "react-native";
 import * as Location from "expo-location";
 import Weatherinfo from "./components/Weatherinfo";
@@ -13,43 +13,69 @@ import Unitspicker from "./components/Unitspicker";
 import Reloadicon from "./components/Reloadicon";
 import Weatherdetails from "./components/Weatherdetails";
 import { colors } from "./utils";
+import Search from "./components/Search";
 
 const BASE_URL = "https://api.openweathermap.org/data/2.5/weather?";
 
 export default function App() {
+
     const [errMsg, setErrMsg] = useState(null);
     const [currentWeather, setCurrentWeather] = useState(null);
     const [units, setUnits] = useState("imperial");
+    const [Sinput, setSinput] = useState("")
 
 
     useEffect(() => {
-        load();
+        load(currentWeather);
     }, [units]);
+    
+    const getNewLoc = (input) => {
+        setSinput(input)
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${input}&units=${units}&appid=c6a50ce34f4caaaba9f91a8a6f24292e`)
+        .then(res=>res.json())
+        .then(res=>{
+            setCurrentWeather(res)
+        })
+    }
 
-    async function load() {
-        setCurrentWeather(null);
-        setErrMsg(null);
-        try {
-            let { status } = await Location.requestPermissionsAsync();
-            if (status !== "granted") {
-                setErrMsg("Aceess to location is needed");
-                return;
+    const setNull = () => {
+        load(null)
+    }
+
+    async function load(currentWeather) {
+        if(!currentWeather){
+
+            setErrMsg(null);
+            try {
+                let { status } = await Location.requestPermissionsAsync();
+                if (status !== "granted") {
+                    setErrMsg("Aceess to location is needed");
+                    return;
+                }
+                const location = await Location.getCurrentPositionAsync();
+                const { latitude, longitude } = location.coords;
+                const weatherUrl = `${BASE_URL}lat=${latitude}&lon=${longitude}&units=${units}&appid=c6a50ce34f4caaaba9f91a8a6f24292e`;
+    
+                const response = await fetch(weatherUrl)
+    
+                const result = await response.json()
+    
+                if (response.ok) {
+                    setCurrentWeather(result)
+                } else {
+                    setErrMsg(result.message)
+                }
+            } catch (error) {
+                setErrMsg(error.message);
             }
-            const location = await Location.getCurrentPositionAsync();
-            const { latitude, longitude } = location.coords;
-            const weatherUrl = `${BASE_URL}lat=${latitude}&lon=${longitude}&units=${units}&appid=c6a50ce34f4caaaba9f91a8a6f24292e`;
-
-            const response = await fetch(weatherUrl)
-
-            const result = await response.json()
-
-            if (response.ok) {
-                setCurrentWeather(result)
-            } else {
-                setErrMsg(result.message)
-            }
-        } catch (error) {
-            setErrMsg(error.message);
+        }else if(Sinput){
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${Sinput}&units=${units}&appid=c6a50ce34f4caaaba9f91a8a6f24292e`)
+            .then(res=>res.json())
+            .then(res=>{
+                setCurrentWeather(res)
+            })
+        }else{
+            load()
         }
     }
     if (currentWeather) {
@@ -58,9 +84,10 @@ export default function App() {
                 <StatusBar style="auto" />
                 <View style={styles.main}>
                     <Unitspicker units={units} setUnits={setUnits} />
-                    <Reloadicon load={load} />
-                    <Weatherinfo currentWeather={currentWeather} />
+                    <Reloadicon load={load} setNull={setNull} setSinput={setSinput}/>
+                    <Weatherinfo currentWeather={currentWeather} units={units}/>
                 </View>
+                <Search getNewLoc={getNewLoc}/>
                 <Weatherdetails currentWeather={currentWeather} units={units}/>
             </SafeAreaView>
         );
@@ -84,11 +111,15 @@ export default function App() {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: "#fff8f0",
         flex: 1,
         justifyContent: "center",
     },
     main: {
         flex: 1,
         justifyContent: "center",
+    },
+    textInput: {
+        flex: 1
     },
 });

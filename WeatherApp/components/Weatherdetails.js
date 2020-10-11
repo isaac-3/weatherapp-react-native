@@ -12,7 +12,7 @@ const Weatherdetails = ({ currentWeather, units }) => {
     } = currentWeather;
 
     const windSpeed = units === "imperial" ? `${Math.round(speed)} miles/hr`: `${Math.round(speed)} m/s`
-
+    const deg = units === "imperial" ? "F" : "C"
     return (
         <View style={styles.weatherDetails}>
             <View style={styles.weatherDetailsRow}>
@@ -21,7 +21,7 @@ const Weatherdetails = ({ currentWeather, units }) => {
                         <FontAwesome5 name="temperature-low" size={25} color={PRIMARY_COLOR}/>
                         <View>
                             <Text>Feels Like:</Text>
-                            <Text style={styles.textSecondary}>{feels_like}°</Text>
+                            <Text style={styles.textSecondary}>{Math.round(feels_like)} {deg}°</Text>
                         </View>
                     </View>
                 </View>
@@ -50,7 +50,7 @@ const Weatherdetails = ({ currentWeather, units }) => {
                         <FontAwesome5 name="temperature-high" size={25} color={PRIMARY_COLOR} />
                         <View>
                             <Text>Max Temp:</Text>
-                            <Text style={styles.textSecondary}>{temp_max}°</Text>
+                            <Text style={styles.textSecondary}>{Math.round(temp_max)} {deg}°</Text>
                         </View>
                     </View>
                 </View>

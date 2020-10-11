@@ -1,30 +1,36 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, SafeAreaView } from "react-native";
 import { colors } from "../utils/index";
 
 const { PRIMARY_COLOR, SECONDARY_COLOR } = colors;
 
-const Weatherinfo = ({ currentWeather }) => {
+const Weatherinfo = ({ currentWeather, units }) => {
     const {
         main: { temp },
         weather: [deatils],
         name,
     } = currentWeather;
+
     const { icon, main, description } = deatils;
+
     const iconUrl = `https://openweathermap.org/img/wn/${icon}@4x.png`;
+
+    const deg = units === "imperial" ? "F" : "C"
+
     return (
-        <View style={styles.weatherInfo}>
+        <SafeAreaView style={styles.weatherInfo}>
             <Text>{name}</Text>
             <Image source={{ uri: iconUrl }} style={styles.weatherIcon} />
-            <Text style={styles.textPrimary}>{temp}°</Text>
+            <Text style={styles.textPrimary}>{Math.round(temp)} {deg}°</Text>
             <Text style={styles.weatherDescription}>{description}</Text>
-            <Text style={styles.textSecondary}>{main}</Text>
-        </View>
+            {/* <Text style={styles.textSecondary}>{main}</Text> */}
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     weatherInfo: {
+        marginTop: 20,
         alignItems: "center",
     },
     weatherIcon: {
